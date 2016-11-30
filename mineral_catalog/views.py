@@ -1,4 +1,7 @@
 from django.shortcuts import render
-from minerals.models import Mineral
+
+
+def index(request):
+    return render(request, 'index.html')
 
 
