@@ -46,8 +46,11 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+
 # other
 .idea
 minerals/fixtures/data/minerals-1.zip
 misc
 scratch_pad
+venv/
+*.pyc

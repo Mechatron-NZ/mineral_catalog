@@ -1,9 +1,90 @@
 import json
 import os
+from collections import OrderedDict
 from minerals.models import Mineral
 
 
+def most_common():
+    """counts the number of times each field appears in the json file"""
+    with open('minerals.json', encoding="utf8") as datafile:
+        data = json.load(datafile)
+        name = 0
+        image_filename = 0
+        image_caption = 0
+        category = 0
+        formula = 0
+        strunz_classification = 0
+        crystal_system = 0
+        unit_cell = 0
+        color = 0
+        crystal_symmetry = 0
+        cleavage = 0
+        mohs_scale_hardness = 0
+        luster = 0
+        streak = 0
+        diaphaneity = 0
+        optical_properties = 0
+        refractive_index = 0
+        crystal_habit = 0
+        specific_gravity = 0
+
+        for item in data:
+
+            keys = item.keys()
+
+            name += (1 if "name" in keys else 0)
+            image_filename += (1 if "image filename" in keys else 0)
+            image_caption += (1 if "image caption" in keys else 0)
+            category += (1 if "category" in keys else 0)
+            formula += (1 if "formula" in keys else 0)
+            strunz_classification += (1 if "strunz classification" in keys else 0)
+            crystal_system += (1 if "crystal system" in keys else 0)
+            unit_cell += (1 if "unit cell" in keys else 0)
+            color += (1 if "color" in keys else 0)
+            crystal_symmetry += (1 if "crystal symmetry" in keys else 0)
+            cleavage += (1 if "cleavage" in keys else 0)
+            mohs_scale_hardness += (1 if "mohs scale hardness" in keys else 0)
+            luster += (1 if "luster" in keys else 0)
+            streak += (1 if "streak" in keys else 0)
+            diaphaneity += (1 if "diaphaneity" in keys else 0)
+            optical_properties += (1 if "optical properties" in keys else 0)
+            refractive_index += (1 if "refractive index" in keys else 0)
+            crystal_habit += (1 if "crystal habit" in keys else 0)
+            specific_gravity += (1 if "specific gravity" in keys else 0)
+
+        properties = {
+            "name": name,
+            "image_filename": image_filename,
+            "image_caption": image_caption,
+            "category": category,
+            "formula": formula,
+            "strunz_classification": strunz_classification,
+            "crystal_system": crystal_system,
+            "unit_cell": unit_cell,
+            "color": color,
+            "crystal_symmetry": crystal_symmetry,
+            "cleavage": cleavage,
+            "mohs_scale_hardness": mohs_scale_hardness,
+            "luster": luster,
+            "streak": streak,
+            "diaphaneity": diaphaneity,
+            "optical_properties": optical_properties,
+            "refractive_index": refractive_index,
+            "crystal_habit": crystal_habit,
+            "specific_gravity": specific_gravity
+        }
+
+        properties = OrderedDict(sorted(properties.items(), key=lambda t: t[1]))
+        print(properties)
+        properties = list(properties)
+
+        for foo in properties:
+            print(foo)
+
+
 def find_duplicates():
+    """checks if more than one mineral is referencing the same image file
+    Prints the name of duplicates and the number of minerals in the database vs the number of images"""
     with open('minerals.json', encoding="utf8") as datafile:
         data = json.load(datafile)
         mineral_file_names = []
@@ -13,7 +94,6 @@ def find_duplicates():
             pass
 
         mineral_file_names = list(set(mineral_file_names))
-        clean_data = []
 
         for name in mineral_file_names:
             entries = list(filter(lambda mineral: mineral["image filename"] == name, data))
@@ -21,13 +101,14 @@ def find_duplicates():
                 for entry in entries:
                     print(entry['name'])
 
-            clean_data.append(entries[0])
+            entries.append(entries[0])
 
         print(len(mineral_file_names))
-        print(len(clean_data))
+        print(len(entries))
 
 
 def simple_image_name():
+    """modifies the name of the image file to be the mineral name + .jpg"""
     with open('minerals.json', encoding="utf8") as datafile:
         data = json.load(datafile)
         for item in data:
@@ -37,12 +118,13 @@ def simple_image_name():
         print("done")
 
 
-def create_fixture_file():
+def populate_database():
+    """creates Mineral objects for every entry in the json file also populates empty fields"""
     with open('minerals.json', encoding="utf8") as datafile:
         data = json.load(datafile)
         fixtures = []
 
-        for pk, item in enumerate(data):
+        for item in data:
 
             keys = item.keys()
 
@@ -72,9 +154,4 @@ def create_fixture_file():
         for mineral in fixtures:
             Mineral.objects.create(**mineral)
 
-        #with open('fixtures_minerals.json', 'w') as fixture_file:
-        #    json.dump(fixtures, fixture_file)
         print('done')
-
-if __name__ == "__main__":
-    create_fixture_file()
